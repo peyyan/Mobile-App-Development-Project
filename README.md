@@ -4,7 +4,7 @@
 
 - MUHAMMAD ATFAN SYAHIR BIN AMRAN (2216291)
 - MUHAMMAD FIKHRY IZZ BIN KHIRULFAZAL (2128001)
-- MOHAMAD QAYS BIN MOHAMAD IBRAHIM (2010901))
+- MOHAMAD QAYS BIN MOHAMAD IBRAHIM (2010901)
 ## Project Title
 NutriScan – Smart Food Calorie Scanner Mobile Application
 ## Introduction
@@ -81,4 +81,12 @@ Relationship
 - One User can have many FoodLogs
 - Each FoodLog belongs to one User
 ## Flowchart or Sequence Diagram
+- ![flowchart](https://github.com/user-attachments/assets/8c0bfa98-d30a-4567-99bf-9e3e9a55337c)
+- <img width="1024" height="1536" alt="sequence" src="https://github.com/user-attachments/assets/4b705719-6583-4a73-9232-59899250f648" />
+
 ## References
+- Flutter Documentation: https://docs.flutter.dev
+- Firebase Documentation: https://firebase.google.com/docs
+- Flutter Packages Repository: https://pub.dev
+- UI Design Inspiration: https://dribbble.com
+- Mobile UX Best Practices: https://material.io/design
