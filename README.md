@@ -81,8 +81,7 @@ Relationship
 - One User can have many FoodLogs
 - Each FoodLog belongs to one User
 ## Flowchart or Sequence Diagram
-- ![flowchart](https://github.com/user-attachments/assets/8c0bfa98-d30a-4567-99bf-9e3e9a55337c)
-- <img width="1024" height="1536" alt="sequence" src="https://github.com/user-attachments/assets/4b705719-6583-4a73-9232-59899250f648" />
+![flowchart](https://github.com/user-attachments/assets/8c0bfa98-d30a-4567-99bf-9e3e9a55337c) /> <img width="1024" height="1536" alt="sequence" src="https://github.com/user-attachments/assets/4b705719-6583-4a73-9232-59899250f648" />
 
 ## References
 - Flutter Documentation: https://docs.flutter.dev
