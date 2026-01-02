@@ -3,7 +3,7 @@
 ## Group 3
 
 MUHAMMAD ATFAN SYAHIR BIN AMRAN 2216291
-
+MUHAMMAD FIKHRY IZZ BIN KHIRULFAZAL
 ## Project Title
 ## Introduction
 ## Objectives
