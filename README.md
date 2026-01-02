@@ -10,6 +10,8 @@ MUHAMMAD FIKHRY IZZ BIN KHIRULFAZAL
 ## Target Users
 ## Features and Functionalities
 ## UI Mock-up
+<img width="349" height="770" alt="image" src="https://github.com/user-attachments/assets/48e7092c-9c17-4608-88f4-f393fbef5c82" />
+
 ## Architecture / Technical Design
 ## Data Model
 ## Flowchart or Sequence Diagram
