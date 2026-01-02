@@ -31,6 +31,54 @@ NutriScan aims to solve this problem by providing a mobile application that allo
 
 
 ## Architecture / Technical Design
+NutriScan follows a client–server architecture using Flutter for the frontend and Firebase as the backend. The application is designed to be modular, scalable, and easy to maintain.
+
+Frontend (Flutter)
+- Built using Flutter framework
+- Uses Material UI components
+- Handles user interaction, navigation, and UI rendering
+- Integrates device camera for food image capture
+
+Backend (Firebase)
+- Firebase Authentication: Handles user login and registration
+- Cloud Firestore: Stores user profiles and food scan history
+- Firebase Storage (optional): Stores uploaded food images
+- External Food Recognition API: Processes food images and returns estimated calorie data
+
+Widget / Component Structure
+-main.dart – Application entry point and route management
+- auth/ – Login and registration screens
+- screens/ – Home, scan, result, history, and settings screens
+- widgets/ – Reusable UI components (buttons, cards, list tiles)
+- services/ – Firebase services and API integration
+- models/ – Data models such as User and FoodLog
+
+State Management
+- setState() is used for basic UI state handling (loading, results display)
+- Firebase Firestore streams are used for real-time data updates in history views
 ## Data Model
+NutriScan uses Cloud Firestore, which follows a collection–document structure.
+
+Collections
+Users
+- userId (String) – Firebase Authentication UID
+- email (String)
+- createdAt (Timestamp)
+
+FoodLogs
+- logId (String)
+- userId (String) – Reference to Users collection
+- foodName (String)
+- estimatedCalories (Number)
+- protein (Number, optional)
+- carbohydrates (Number, optional)
+- fat (Number, optional)
+- imageUrl (String, optional)
+- timestamp (Timestamp)
+- dateKey (String – used for grouping daily logs)
+
+Relationship
+- One User can have many FoodLogs
+- Each FoodLog belongs to one User
 ## Flowchart or Sequence Diagram
 ## References
