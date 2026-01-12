@@ -12,9 +12,7 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  final FirebaseService _firebaseService = FirebaseService();
   bool _isLoading = true;
-  String? _error;
   List<FoodLog> _logs = [];
 
   @override
@@ -25,25 +23,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Future<void> _loadLogs() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      setState(() {
-        _isLoading = false;
-        _error = 'Please log in to see history.';
-      });
-      return;
-    }
-
-    try {
-      final logs = await _firebaseService.fetchFoodLogs(user.uid);
-      setState(() {
-        _logs = logs;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _error = 'Failed to load history.';
-      });
+    if (user != null) {
+      try {
+        final logs = await FirebaseService().fetchFoodLogs(user.uid);
+        if (mounted) {
+          setState(() {
+            _logs = logs;
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to load history')),
+          );
+          setState(() => _isLoading = false);
+        }
+      }
+    } else {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -53,24 +53,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
       appBar: AppBar(title: const Text('History')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(child: Text(_error!))
-              : _logs.isEmpty
-                  ? const Center(child: Text('No scans yet.'))
-                  : ListView.separated(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _logs.length,
-                      separatorBuilder: (_, __) => const Divider(),
-                      itemBuilder: (context, index) {
-                        final log = _logs[index];
-                        final time = TimeOfDay.fromDateTime(log.timestamp).format(context);
-                        return ListTile(
-                          leading: const Icon(Icons.restaurant),
-                          title: Text(log.foodName),
-                          subtitle: Text('${log.calories} kcal · $time'),
-                        );
-                      },
-                    ),
+          : _logs.isEmpty
+          ? const Center(child: Text('No history yet.'))
+          : ListView.builder(
+              itemCount: _logs.length,
+              itemBuilder: (context, index) {
+                final log = _logs[index];
+                return ListTile(
+                  title: Text(log.foodName),
+                  subtitle: Text(
+                    log.timestamp.toString().split('.')[0],
+                  ), // Basic formatting
+                  trailing: Text('${log.calories} kcal'),
+                );
+              },
+            ),
     );
   }
 }
