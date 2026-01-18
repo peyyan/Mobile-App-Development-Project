@@ -37,12 +37,10 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      // Navigate to home or let auth state listener handle it (assuming there is one, if not, popping might be enough or replace)
-      // For now, let's assume valid login leads back or to main.
-      // If used as top level, might need valid navigation.
-      // Given previous context, it might be pushReplacement to Home.
-      // But let's stick to popping if it was pushed from Welcome, or rely on Auth Wrapper.
-      // If we are just replacing UI of existing screen, behavior remains same.
+
+      // Navigate to AuthGate which will show MainScreen for authenticated users
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/auth');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
