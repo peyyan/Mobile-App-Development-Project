@@ -2,11 +2,11 @@ import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'firebase_options.dart';
-import 'screens/main_screen.dart';
-
-import 'screens/welcome_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/main_screen.dart'; // Import MainScreen
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,11 +25,22 @@ class NutriScanApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'NutriScan',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF00D563),
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
+        textTheme: GoogleFonts.interTextTheme(),
       ),
-      home: AuthGate(cameras: cameras),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const LandingPage(),
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/auth': (context) => AuthGate(cameras: cameras),
+      },
     );
   }
 }
@@ -51,7 +62,7 @@ class AuthGate extends StatelessWidget {
         }
 
         if (snapshot.hasData) {
-          return MainScreen(cameras: cameras); // Use MainScreen
+          return MainScreen(cameras: cameras);
         }
 
         return const WelcomeScreen();
