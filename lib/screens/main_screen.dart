@@ -22,32 +22,16 @@ class _MainScreenState extends State<MainScreen> {
     // List of screens to display.
     // Note: We create them here. For better performance/state preservation,
     // we might want to use IndexedStack, but for now simple switching is fine.
-    final List<Widget> screens = [
-      HomeScreen(cameras: widget.cameras),
-      ScanScreen(cameras: widget.cameras), // Direct access to Scan tab
-      const ProfileScreen(),
-    ];
+    // List of screens to display.
+    // Note: We create them here. For better performance/state preservation,
+    // we might want to use IndexedStack, but for now simple switching is fine.
+    // final List<Widget> screens = [
+    //   HomeScreen(cameras: widget.cameras),
+    //   ScanScreen(cameras: widget.cameras), // Direct access to Scan tab
+    //   const ProfileScreen(),
+    // ];
 
-    return Scaffold(
-      body: screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.qr_code_scanner),
-            label: 'Scan',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
-    );
+    // Since HomeScreen now handles navigation internally, we just return it directly.
+    return HomeScreen(cameras: widget.cameras);
   }
 }
