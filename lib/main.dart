@@ -4,8 +4,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'firebase_options.dart';
-import 'screens/login_screen.dart';
-import 'screens/main_screen.dart'; // Import MainScreen
+import 'screens/main_screen.dart';
+
+import 'screens/welcome_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,7 +54,7 @@ class AuthGate extends StatelessWidget {
           return MainScreen(cameras: cameras); // Use MainScreen
         }
 
-        return const LoginScreen();
+        return const WelcomeScreen();
       },
     );
   }
