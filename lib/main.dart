@@ -1,19 +1,18 @@
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'firebase_options.dart';
+import 'screens/calorie_intake_form.dart';
 import 'screens/landing_page.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_screen.dart'; // Import MainScreen
 import 'screens/register_screen.dart';
 import 'screens/welcome_screen.dart';
-import 'screens/main_screen.dart'; // Import MainScreen
-import 'screens/landing_page.dart';
-import 'screens/register_screen.dart';
-import 'screens/welcome_screen.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,7 +68,28 @@ class AuthGate extends StatelessWidget {
         }
 
         if (snapshot.hasData) {
-          return MainScreen(cameras: cameras);
+                   // User is authenticated, check if they have completed the profile
+          return FutureBuilder<DocumentSnapshot>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(snapshot.data!.uid)
+                .get(),
+            builder: (context, profileSnapshot) {
+              if (profileSnapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+              // If profile doesn't exist or doesn't have targetCalories, show form
+              if (!profileSnapshot.hasData ||
+                  !profileSnapshot.data!.exists ||
+                  profileSnapshot.data!.get('targetCalories') == null) {
+                return const CalorieIntakeForm();
+              }
+              // Profile exists, go to main screen
+              return MainScreen(cameras: cameras);
+            },
+          );
         }
 
         return const WelcomeScreen();
