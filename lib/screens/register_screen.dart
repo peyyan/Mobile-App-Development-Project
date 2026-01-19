@@ -37,7 +37,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: _passwordController.text.trim(),
       );
       if (mounted) {
-        Navigator.of(context).pop(); // Go back to login on success
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/auth', (route) => false);
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;

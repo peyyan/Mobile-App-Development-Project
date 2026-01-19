@@ -5,8 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'firebase_options.dart';
+import 'screens/landing_page.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_screen.dart'; // Import MainScreen
+import 'screens/register_screen.dart';
+import 'screens/welcome_screen.dart';
+import 'screens/main_screen.dart'; // Import MainScreen
+import 'screens/landing_page.dart';
+import 'screens/register_screen.dart';
+import 'screens/welcome_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
