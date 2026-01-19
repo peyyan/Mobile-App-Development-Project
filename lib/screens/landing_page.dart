@@ -29,15 +29,13 @@ class _LandingPageState extends State<LandingPage>
       ),
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
-      ),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
+          ),
+        );
 
     _controller.forward();
   }
@@ -56,7 +54,10 @@ class _LandingPageState extends State<LandingPage>
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 40.0,
+              ),
               child: FadeTransition(
                 opacity: _fadeAnimation,
                 child: SlideTransition(
@@ -168,10 +169,7 @@ class _LandingPageState extends State<LandingPage>
                     gradient: const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF7DD3C0),
-                        Color(0xFF5FB8A8),
-                      ],
+                      colors: [Color(0xFF7DD3C0), Color(0xFF5FB8A8)],
                     ),
                     borderRadius: BorderRadius.circular(24),
                   ),
@@ -180,9 +178,7 @@ class _LandingPageState extends State<LandingPage>
                 Positioned.fill(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: CustomPaint(
-                      painter: ScannerFramePainter(),
-                    ),
+                    child: CustomPaint(painter: ScannerFramePainter()),
                   ),
                 ),
                 // Food image
@@ -199,10 +195,7 @@ class _LandingPageState extends State<LandingPage>
                   ),
                 ),
                 // Analysis Ready Badge
-                Positioned(
-                  bottom: 20,
-                  child: _buildAnalysisBadge(),
-                ),
+                Positioned(bottom: 20, child: _buildAnalysisBadge()),
               ],
             ),
           ],
@@ -272,10 +265,7 @@ class _LandingPageState extends State<LandingPage>
     return Container(
       width: 8,
       height: 8,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 
@@ -351,7 +341,7 @@ class _LandingPageState extends State<LandingPage>
       child: ElevatedButton(
         onPressed: () {
           // Navigate to registration screen
-          Navigator.pushReplacementNamed(context, '/register');
+          Navigator.pushNamed(context, '/register');
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF00D563),
@@ -388,7 +378,7 @@ class _LandingPageState extends State<LandingPage>
         GestureDetector(
           onTap: () {
             // Navigate to login screen
-            Navigator.pushReplacementNamed(context, '/login');
+            Navigator.pushNamed(context, '/login');
           },
           child: Text(
             'Log in',
@@ -454,7 +444,11 @@ class ScannerFramePainter extends CustomPainter {
         ..moveTo(size.width, size.height - cornerLength)
         ..lineTo(size.width, size.height - cornerRadius)
         ..quadraticBezierTo(
-            size.width, size.height, size.width - cornerRadius, size.height)
+          size.width,
+          size.height,
+          size.width - cornerRadius,
+          size.height,
+        )
         ..lineTo(size.width - cornerLength, size.height),
       paint,
     );
