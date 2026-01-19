@@ -42,6 +42,10 @@ class _LoginScreenState extends State<LoginScreen> {
           context,
         ).pushNamedAndRemoveUntil('/auth', (route) => false);
       }
+
+      // Navigate to AuthGate which will show MainScreen for authenticated users
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/auth');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
