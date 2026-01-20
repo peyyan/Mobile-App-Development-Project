@@ -1,6 +1,11 @@
 import 'package:camera/camera.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nutriscan/utils/color_ext.dart';
+
+import '../models/food_log.dart';
+import '../services/firebase_service.dart';
 import 'profile_screen.dart';
 import 'result_screen.dart';
 import 'scan_screen.dart';
@@ -18,6 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // Default to Home
   String _selectedFilter = 'All';
   DateTime _selectedDate = DateTime.now();
+  bool _isLoading = true;
+  List<FoodLog> _logs = [];
 
   final List<String> _filters = [
     'All',
@@ -26,6 +33,39 @@ class _HomeScreenState extends State<HomeScreen> {
     'Dinner',
     'Snack',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLogs();
+  }
+
+  Future<void> _loadLogs() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+      return;
+    }
+
+    try {
+      final logs = await FirebaseService().fetchFoodLogs(user.uid);
+      if (mounted) {
+        setState(() {
+          _logs = logs;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Failed to load history')));
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   void _onItemTapped(int index) {
     if (index == 1) {
@@ -71,6 +111,24 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  List<FoodLog> _filteredLogs() {
+    final logsForDate = _logs.where((log) {
+      return log.timestamp.year == _selectedDate.year &&
+          log.timestamp.month == _selectedDate.month &&
+          log.timestamp.day == _selectedDate.day;
+    }).toList();
+
+    if (_selectedFilter == 'All') {
+      return logsForDate;
+    }
+
+    return logsForDate
+        .where(
+          (log) => log.mealType.toLowerCase() == _selectedFilter.toLowerCase(),
+        )
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Colors from design
@@ -78,7 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
     const backgroundLight = Color(0xFFffffff);
     const cardLight = Color(0xFFF7F9F8);
     const textColor = Color(0xFF0d1b12);
-    // const backgroundDark = Color(0xFF102216); // Keeping light mode focus for now
 
     return Scaffold(
       backgroundColor: backgroundLight,
@@ -211,234 +268,64 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Main Content
             Expanded(
-              child: StreamBuilder<UserModel?>(
-                stream: FirebaseService().getUser(
-                  FirebaseAuth.instance.currentUser?.uid ?? '',
-                ),
-                builder: (context, snapshot) {
-                  final user = snapshot.data;
-                  final targetCalories = user?.targetCalories ?? 2000;
-                  final goal = user?.goal ?? 'maintain';
-
-                  String goalText;
-                  if (goal == 'lose') {
-                    goalText = 'Deficit Goal';
-                  } else if (goal == 'gain') {
-                    goalText = 'Surplus Goal';
-                  } else {
-                    goalText = 'Maintenance';
-                  }
-
-                  return StreamBuilder<List<FoodLog>>(
-                    stream: FirebaseService().getFoodLogsStream(
-                      FirebaseAuth.instance.currentUser?.uid ?? '',
-                    ),
-                    builder: (context, logSnapshot) {
-                      if (logSnapshot.hasError) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Text(
-                              'Error loading data: ${logSnapshot.error}',
-                              style: const TextStyle(color: Colors.red),
-                              textAlign: TextAlign.center,
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(color: primaryColor),
+                    )
+                  : _filteredLogs().isEmpty
+                  ? Center(
+                      child: Text(
+                        'No history yet.',
+                        style: GoogleFonts.manrope(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: textColor.o(0.6),
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 24,
+                      ),
+                      itemCount: _filteredLogs().length,
+                      itemBuilder: (context, index) {
+                        final log = _filteredLogs()[index];
+                        final healthType = log.calories <= 400
+                            ? HealthScoreType.good
+                            : log.calories <= 700
+                            ? HealthScoreType.moderate
+                            : HealthScoreType.bad;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _buildMealCard(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResultScreen(
+                                  foodName: log.foodName,
+                                  calories: log.calories,
+                                  isViewOnly: true,
+                                ),
+                              ),
                             ),
+                            title: log.foodName,
+                            category: log.mealType.isEmpty
+                                ? 'Logged'
+                                : log.mealType,
+                            imageUri:
+                                'https://lh3.googleusercontent.com/aida-public/AB6AXuBtf0sbyZ6NQ2hwzR-3IKuY-Ws7EC5Z895meiDc-HpNhYVjyj3_KvwB4FsAGy7dZVvuYih7KMd7om0fvyph4V5WfrfgsQqlLgpRxM5ZtSjqapYmD1UPTzQ2DNGyVeXX5A9LeNs5R54zcCqM8Ha8-0JUQ7oPeT_1C_PqytAXS8uKfzNArK07hWVcoewNuvzU5jlNR5o6s0djdWUlsf3UEYP6N-KWhmGqobU_8MtxKls9DBwk8kJOyB0zmCqjF-ss7JU_fYkuQRhOe2M',
+                            calories: log.calories,
+                            protein: 0,
+                            fat: 0,
+                            healthType: healthType,
+                            primaryColor: primaryColor,
+                            cardColor: cardLight,
+                            textColor: textColor,
                           ),
                         );
-                      }
-
-                      if (logSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      final logs = logSnapshot.data ?? [];
-
-                      // Filter by selected date
-                      final selectedLogs = logs.where((log) {
-                        return log.timestamp.year == _selectedDate.year &&
-                            log.timestamp.month == _selectedDate.month &&
-                            log.timestamp.day == _selectedDate.day;
-                      }).toList();
-
-                      // Calculate total calories
-                      final totalCalories = selectedLogs.fold<int>(
-                        0,
-                        (sum, item) => sum + item.calories,
-                      );
-
-                      // Categorize Logs
-                      final Map<String, List<FoodLog>> categorizedLogs = {
-                        'Breakfast': [],
-                        'Lunch': [],
-                        'Dinner': [],
-                        'Snack': [],
-                        'Supper': [],
-                      };
-
-                      for (var log in selectedLogs) {
-                        if (categorizedLogs.containsKey(log.mealType)) {
-                          categorizedLogs[log.mealType]!.add(log);
-                        } else if (log.mealType == 'Evening Tea') {
-                          categorizedLogs['Snack']!.add(log);
-                        } else {
-                          // Default to Snack if unknown
-                          categorizedLogs['Snack']!.add(log);
-                        }
-                      }
-
-                      return ListView(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 24,
-                        ),
-                        children: [
-                          // Goal Header
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 24),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: primaryColor.withOpacity(0.2),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Daily Target',
-                                      style: GoogleFonts.manrope(
-                                        fontSize: 14,
-                                        color: textColor.withOpacity(0.6),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      goalText,
-                                      style: GoogleFonts.manrope(
-                                        fontSize: 16,
-                                        color: primaryColor,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      '$targetCalories',
-                                      style: GoogleFonts.manrope(
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold,
-                                        color: textColor,
-                                        height: 1,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 4),
-                                      child: Text(
-                                        'kcal',
-                                        style: GoogleFonts.manrope(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: textColor.withOpacity(0.5),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Today Summary
-                          _buildSectionHeader(
-                            'Total Intake',
-                            '$totalCalories / $targetCalories kcal',
-                            primaryColor,
-                          ),
-                          const SizedBox(height: 24),
-
-                          // Meal Categories
-                          ...categorizedLogs.entries.map((entry) {
-                            if (entry.value.isEmpty)
-                              return const SizedBox.shrink();
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: Text(
-                                    entry.key.toUpperCase(),
-                                    style: GoogleFonts.manrope(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey[500],
-                                      letterSpacing: 1.0,
-                                    ),
-                                  ),
-                                ),
-                                ...entry.value.map(
-                                  (log) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 12),
-                                    child: _buildMealCard(
-                                      title: log.foodName,
-                                      category: entry.key,
-                                      imageUri:
-                                          'https://lh3.googleusercontent.com/aida-public/AB6AXuCj3Ru18d53PPXAfoR5OeiVvCVVEAG3uXzY8KgzeE7IAwCRL8hDsD_yP-cPLa_c2Ijx53kDran0hbioFtR2YLNEmOwOLt0nI1xbq6YG9q8DT-eeS05Pj2lMcl6hevOWDtoLaThmXferFUn6EkpBnC9b7V2FstJH2WUtvuYH8MUiuSpnaaA0WEPb7FjpWcfSLG64cQTeZpZl0A7GFMndue61ZnBuzAjo0jcQ19T0MibMKxKeGyvU5wspU5UDhnL1guLDv4RQXOCrzs8', // Placeholder or add image to FoodLog
-                                      calories: log.calories,
-                                      protein:
-                                          0, // TODO: Add macro support to FoodLog
-                                      fat: 0,
-                                      healthType: HealthScoreType
-                                          .good, // Dynamic logic needed later
-                                      primaryColor: primaryColor,
-                                      cardColor: cardLight,
-                                      textColor: textColor,
-                                      onTap: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ResultScreen(
-                                            foodName: log.foodName,
-                                            calories: log.calories,
-                                            isViewOnly: true,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                              ],
-                            );
-                          }).toList(),
-
-                          if (selectedLogs.isEmpty)
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(32),
-                                child: Text(
-                                  'No meals logged for this day',
-                                  style: GoogleFonts.manrope(
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
+                      },
+                    ),
             ),
           ],
         ),
@@ -508,37 +395,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title, String kCal, Color color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.manrope(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF0d1b12),
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: color == Colors.grey ? Colors.transparent : color.o(0.1),
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            kCal,
-            style: GoogleFonts.manrope(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: color == Colors.grey ? color : color.o(1.0),
-            ),
-          ),
-        ),
-      ],
     );
   }
 

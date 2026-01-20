@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nutriscan/utils/color_ext.dart';
 
-import '../services/mock_food_api_service.dart';
+import '../services/food_analysis_service.dart';
+import 'gallery_picker_screen.dart';
+import 'manual_entry_screen.dart';
 import 'result_screen.dart';
 
 class ScanScreen extends StatefulWidget {
@@ -85,7 +87,7 @@ class _ScanScreenState extends State<ScanScreen> {
     if (_isProcessing) return;
     setState(() => _isProcessing = true);
     try {
-      final result = await MockFoodApiService().analyzeFood(imagePath);
+      final result = await FoodAnalysisService().analyzeFood(imagePath);
       if (!mounted) return;
 
       // Turn off flash before navigating if it was on torch mode
@@ -107,12 +109,57 @@ class _ScanScreenState extends State<ScanScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Scan failed. Try again.')));
+      ).showSnackBar(SnackBar(content: Text('Scan failed: ${e.toString()}')));
     } finally {
       if (mounted) {
         setState(() => _isProcessing = false);
       }
     }
+  }
+
+  Future<void> _captureAndAnalyze() async {
+    if (_controller == null || !_controller!.value.isInitialized) return;
+    if (_isProcessing) return;
+
+    try {
+      final picture = await _controller!.takePicture();
+      if (!mounted) return;
+      await _runAnalysis(picture.path);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Scan failed: ${e.toString()}')));
+    }
+  }
+
+  Future<void> _openGallery() async {
+    final path = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (context) => const GalleryPickerScreen()),
+    );
+    if (!mounted) return;
+    if (path == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gallery selection canceled.')),
+      );
+      return;
+    }
+    await _runAnalysis(path);
+  }
+
+  Future<void> _openManualEntry() async {
+    final manualText = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (context) => const ManualEntryScreen()),
+    );
+    if (!mounted) return;
+    final text = manualText?.trim();
+    if (text == null || text.isEmpty) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ResultScreen(foodName: text, calories: 0),
+      ),
+    );
   }
 
   @override
@@ -420,7 +467,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               ),
                             ),
                             onTap: () {
-                              // TODO: Manual entry
+                              _openManualEntry();
                             },
                           ),
                         ],
