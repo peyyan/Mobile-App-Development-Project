@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nutriscan/utils/color_ext.dart';
 
 import '../models/food_log.dart';
 import '../services/firebase_service.dart';
@@ -104,7 +105,7 @@ class _ResultScreenState extends State<ResultScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.black.withOpacity(0.5), Colors.transparent],
+                    colors: [Colors.black.o(0.5), Colors.transparent],
                   ),
                 ),
               ),
@@ -229,7 +230,7 @@ class _ResultScreenState extends State<ResultScreen> {
                         _buildChip(
                           Icons.verified,
                           'High Protein',
-                          primaryColor.withOpacity(0.1),
+                          primaryColor.o(0.1),
                           primaryColor,
                           textColor,
                         ),
@@ -339,7 +340,7 @@ class _ResultScreenState extends State<ResultScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.o(0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -401,7 +402,7 @@ class _ResultScreenState extends State<ResultScreen> {
                     backgroundColor: primaryColor,
                     foregroundColor: const Color(0xFF0d1b12),
                     elevation: 8,
-                    shadowColor: primaryColor.withOpacity(0.4),
+                    shadowColor: primaryColor.o(0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -440,7 +441,7 @@ class _ResultScreenState extends State<ResultScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.o(0.2),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: Colors.white, size: 20),
@@ -460,7 +461,7 @@ class _ResultScreenState extends State<ResultScreen> {
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: iconColor.withOpacity(0.2)),
+        border: Border.all(color: iconColor.o(0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -496,7 +497,7 @@ class _ResultScreenState extends State<ResultScreen> {
         border: Border.all(color: Colors.grey[100]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.o(0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

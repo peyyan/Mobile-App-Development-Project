@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nutriscan/utils/color_ext.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -114,7 +115,7 @@ class _LandingPageState extends State<LandingPage>
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF00D563).withOpacity(0.2),
+                color: const Color(0xFF00D563).o(0.2),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -148,7 +149,7 @@ class _LandingPageState extends State<LandingPage>
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.o(0.08),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -212,7 +213,7 @@ class _LandingPageState extends State<LandingPage>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.o(0.1),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -347,7 +348,7 @@ class _LandingPageState extends State<LandingPage>
           backgroundColor: const Color(0xFF00D563),
           foregroundColor: Colors.white,
           elevation: 0,
-          shadowColor: const Color(0xFF00D563).withOpacity(0.3),
+          shadowColor: const Color(0xFF00D563).o(0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

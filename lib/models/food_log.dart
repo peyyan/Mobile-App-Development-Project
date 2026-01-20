@@ -30,7 +30,8 @@ class FoodLog {
     if (rawTimestamp is Timestamp) {
       parsedTimestamp = rawTimestamp.toDate();
     } else if (rawTimestamp is String) {
-      parsedTimestamp = DateTime.tryParse(rawTimestamp)?.toLocal() ?? DateTime.now();
+      parsedTimestamp =
+          DateTime.tryParse(rawTimestamp)?.toLocal() ?? DateTime.now();
     } else {
       parsedTimestamp = DateTime.now();
     }

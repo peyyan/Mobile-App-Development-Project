@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:nutriscan/utils/color_ext.dart';
+import 'forgot_password_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -48,9 +51,11 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacementNamed(context, '/auth');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
+      debugPrint('Login failed: ${e.code} ${e.message}');
+      final message = e.message ?? 'Login failed.';
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.message ?? 'Login failed.')));
+      ).showSnackBar(SnackBar(content: Text('${e.code}: $message')));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -62,6 +67,53 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (context) => const RegisterScreen()));
+  }
+
+  void _goToForgotPassword() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+    );
+  }
+
+  Future<void> _signInWithGoogle() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+    try {
+      final googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Google sign-in canceled.')),
+          );
+        }
+        return;
+      }
+
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/auth');
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      final message = e.message ?? 'Google sign-in failed.';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${e.code}: $message')));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -86,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(Icons.chevron_left, color: textColor),
                     style: IconButton.styleFrom(
-                      backgroundColor: primaryColor.withOpacity(0.1),
+                      backgroundColor: primaryColor.o(0.1),
                     ),
                   ),
                   Text(
@@ -95,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
-                      color: textColor.withOpacity(0.4),
+                      color: textColor.o(0.4),
                     ),
                   ),
                   const SizedBox(width: 48), // Spacer
@@ -108,11 +160,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.1),
+                  color: primaryColor.o(0.1),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.o(0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -141,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.manrope(
                   fontSize: 16,
-                  color: textColor.withOpacity(0.6),
+                  color: textColor.o(0.6),
                   height: 1.5,
                 ),
               ),
@@ -173,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {}, // TODO: Implement Forgot Password
+                  onPressed: _goToForgotPassword,
                   child: Text(
                     'Forgot Password?',
                     style: GoogleFonts.manrope(
@@ -196,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     backgroundColor: primaryColor,
                     foregroundColor: textColor,
                     elevation: 0,
-                    shadowColor: primaryColor.withOpacity(0.4),
+                    shadowColor: primaryColor.o(0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -227,10 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: Container(
-                      height: 1,
-                      color: textColor.withOpacity(0.1),
-                    ),
+                    child: Container(height: 1, color: textColor.o(0.1)),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -239,23 +288,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.manrope(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: textColor.withOpacity(0.4),
+                        color: textColor.o(0.4),
                       ),
                     ),
                   ),
                   Expanded(
-                    child: Container(
-                      height: 1,
-                      color: textColor.withOpacity(0.1),
-                    ),
+                    child: Container(height: 1, color: textColor.o(0.1)),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
               InkWell(
-                onTap: () {
-                  // TODO: Implement Google Sign In
-                },
+                onTap: _isLoading ? null : _signInWithGoogle,
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
                   width: 64,
@@ -263,7 +307,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.black.withOpacity(0.05)),
+                    border: Border.all(color: Colors.black.o(0.05)),
                   ),
                   child: Center(
                     // Google Icon SVG representation or generic icon
@@ -286,9 +330,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   Text(
                     'New here?',
-                    style: GoogleFonts.manrope(
-                      color: textColor.withOpacity(0.6),
-                    ),
+                    style: GoogleFonts.manrope(color: textColor.o(0.6)),
                   ),
                   TextButton(
                     onPressed: _goToRegister,
@@ -330,13 +372,13 @@ class _LoginScreenState extends State<LoginScreen> {
               fontSize: 12,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
-              color: textColor.withOpacity(0.8),
+              color: textColor.o(0.8),
             ),
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.o(0.03),
             borderRadius: BorderRadius.circular(12),
           ),
           child: TextField(
@@ -348,16 +390,12 @@ class _LoginScreenState extends State<LoginScreen> {
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
-              prefixIcon: Icon(
-                icon,
-                color: textColor.withOpacity(0.4),
-                size: 20,
-              ),
+              prefixIcon: Icon(icon, color: textColor.o(0.4), size: 20),
               suffixIcon: isPassword
                   ? IconButton(
                       icon: Icon(
                         obscureText ? Icons.visibility : Icons.visibility_off,
-                        color: textColor.withOpacity(0.4),
+                        color: textColor.o(0.4),
                         size: 20,
                       ),
                       onPressed: onToggleVisibility,
@@ -373,7 +411,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   : label.contains('EMAIL')
                   ? 'hello@example.com'
                   : '',
-              hintStyle: TextStyle(color: textColor.withOpacity(0.3)),
+              hintStyle: TextStyle(color: textColor.o(0.3)),
             ),
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; // Ensure google_fonts is in pubspec, otherwise fallback
+import 'package:nutriscan/utils/color_ext.dart';
 import 'login_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -77,7 +78,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.o(0.1),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -115,9 +116,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
                           // Dark Overlay
                           Positioned.fill(
-                            child: Container(
-                              color: Colors.black.withOpacity(0.1),
-                            ),
+                            child: Container(color: Colors.black.o(0.1)),
                           ),
 
                           // Scanning UI Overlay
@@ -165,14 +164,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        Colors.white.withOpacity(0),
+                                        Colors.white.o(0),
                                         primaryColor,
-                                        Colors.white.withOpacity(0),
+                                        Colors.white.o(0),
                                       ],
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: primaryColor.withOpacity(0.6),
+                                        color: primaryColor.o(0.6),
                                         blurRadius: 15,
                                         spreadRadius: 1,
                                       ),
@@ -195,14 +194,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                   vertical: 10,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.o(0.9),
                                   borderRadius: BorderRadius.circular(30),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.2),
+                                    color: Colors.white.o(0.2),
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
+                                      color: Colors.black.o(0.1),
                                       blurRadius: 10,
                                       offset: const Offset(0, 4),
                                     ),
@@ -249,7 +248,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             borderRadius: BorderRadius.circular(4),
                             boxShadow: [
                               BoxShadow(
-                                color: primaryColor.withOpacity(0.4),
+                                color: primaryColor.o(0.4),
                                 blurRadius: 10,
                               ),
                             ],
@@ -313,8 +312,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   end: Alignment.topCenter,
                   colors: [
                     backgroundLight,
-                    backgroundLight.withOpacity(0.8),
-                    backgroundLight.withOpacity(0),
+                    backgroundLight.o(0.8),
+                    backgroundLight.o(0),
                   ],
                   stops: const [0.0, 0.6, 1.0],
                 ),
@@ -336,7 +335,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         backgroundColor: primaryColor,
                         foregroundColor: const Color(0xFF0d1b12),
                         elevation: 0,
-                        shadowColor: primaryColor.withOpacity(0.4),
+                        shadowColor: primaryColor.o(0.4),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -430,7 +429,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       width: 24,
       height: 24,
       decoration: BoxDecoration(
-        color: baseColor.withOpacity(0.1),
+        color: baseColor.o(0.1),
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white, width: 2),
       ),
@@ -438,7 +437,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         child: Text(
           text,
           style: TextStyle(
-            color: baseColor.withOpacity(0.8),
+            color: baseColor.o(0.8),
             fontWeight: FontWeight.w900,
             fontSize: 10,
           ),

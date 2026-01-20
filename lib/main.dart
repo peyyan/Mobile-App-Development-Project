@@ -13,7 +13,6 @@ import 'screens/main_screen.dart'; // Import MainScreen
 import 'screens/register_screen.dart';
 import 'screens/welcome_screen.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -68,7 +67,7 @@ class AuthGate extends StatelessWidget {
         }
 
         if (snapshot.hasData) {
-                   // User is authenticated, check if they have completed the profile
+          // User is authenticated, check if they have completed the profile
           return FutureBuilder<DocumentSnapshot>(
             future: FirebaseFirestore.instance
                 .collection('users')

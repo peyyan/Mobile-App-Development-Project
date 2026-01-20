@@ -6,10 +6,7 @@ class FoodResult {
   final String foodName;
   final int estimatedCalories;
 
-  FoodResult({
-    required this.foodName,
-    required this.estimatedCalories,
-  });
+  FoodResult({required this.foodName, required this.estimatedCalories});
 }
 
 class MockFoodApiService {

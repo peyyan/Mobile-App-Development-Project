@@ -1,8 +1,11 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nutriscan/utils/color_ext.dart';
 
 import '../services/mock_food_api_service.dart';
+import 'gallery_picker_screen.dart';
+import 'manual_entry_screen.dart';
 import 'result_screen.dart';
 
 class ScanScreen extends StatefulWidget {
@@ -73,28 +76,24 @@ class _ScanScreenState extends State<ScanScreen> {
 
     try {
       await _controller!.setFlashMode(newMode);
+      if (!mounted) return;
       setState(() => _flashMode = newMode);
     } catch (e) {
       debugPrint('Error toggling flash: $e');
     }
   }
 
-  Future<void> _captureAndAnalyze() async {
-    if (_controller == null || !_controller!.value.isInitialized) return;
+  Future<void> _runAnalysis(String imagePath) async {
     if (_isProcessing) return;
-
     setState(() => _isProcessing = true);
     try {
-      final picture = await _controller!.takePicture();
-      // In a real app, we might crop based on the reticle here.
-
-      // Mock Analysis
-      final result = await MockFoodApiService().analyzeFood(picture.path);
+      final result = await MockFoodApiService().analyzeFood(imagePath);
       if (!mounted) return;
 
       // Turn off flash before navigating if it was on torch mode
-      if (_flashMode == FlashMode.torch) {
+      if (_flashMode == FlashMode.torch && _controller != null) {
         await _controller!.setFlashMode(FlashMode.off);
+        if (!mounted) return;
         setState(() => _flashMode = FlashMode.off);
       }
 
@@ -107,16 +106,62 @@ class _ScanScreenState extends State<ScanScreen> {
         ),
       );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Scan failed. Try again.')),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Scan failed. Try again.')));
     } finally {
       if (mounted) {
         setState(() => _isProcessing = false);
       }
     }
+  }
+
+  Future<void> _captureAndAnalyze() async {
+    if (_controller == null || !_controller!.value.isInitialized) return;
+    if (_isProcessing) return;
+
+    try {
+      final picture = await _controller!.takePicture();
+      if (!mounted) return;
+      // In a real app, we might crop based on the reticle here.
+      await _runAnalysis(picture.path);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Scan failed. Try again.')));
+    }
+  }
+
+  Future<void> _openGallery() async {
+    final path = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (context) => const GalleryPickerScreen()),
+    );
+    if (!mounted) return;
+    if (path == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gallery selection canceled.')),
+      );
+      return;
+    }
+    await _runAnalysis(path);
+  }
+
+  Future<void> _openManualEntry() async {
+    final manualText = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (context) => const ManualEntryScreen()),
+    );
+    if (!mounted) return;
+    final text = manualText?.trim();
+    if (text == null || text.isEmpty) {
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ResultScreen(foodName: text, calories: 0),
+      ),
+    );
   }
 
   @override
@@ -163,7 +208,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                  colors: [Colors.black.o(0.7), Colors.transparent],
                 ),
               ),
             ),
@@ -179,7 +224,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [Colors.black.withOpacity(0.8), Colors.transparent],
+                  colors: [Colors.black.o(0.8), Colors.transparent],
                 ),
               ),
             ),
@@ -254,11 +299,11 @@ class _ScanScreenState extends State<ScanScreen> {
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: primaryColor.withOpacity(0.8),
+                            color: primaryColor.o(0.8),
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: primaryColor.withOpacity(0.5),
+                                color: primaryColor.o(0.5),
                                 blurRadius: 10,
                                 spreadRadius: 2,
                               ),
@@ -291,7 +336,7 @@ class _ScanScreenState extends State<ScanScreen> {
                   style: GoogleFonts.manrope(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.o(0.8),
                     shadows: [
                       const Shadow(
                         blurRadius: 2,
@@ -320,11 +365,9 @@ class _ScanScreenState extends State<ScanScreen> {
                     Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.o(0.4),
                         borderRadius: BorderRadius.circular(22),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                        ),
+                        border: Border.all(color: Colors.white.o(0.1)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -351,7 +394,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.o(0.2),
                                   width: 2,
                                 ),
                                 image: const DecorationImage(
@@ -365,7 +408,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               ),
                             ),
                             onTap: () {
-                              // TODO: Gallery navigation
+                              _openGallery();
                             },
                           ),
 
@@ -389,7 +432,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: primaryColor.withOpacity(0.4),
+                                      color: primaryColor.o(0.4),
                                       blurRadius: 20,
                                       spreadRadius: 2,
                                     ),
@@ -415,11 +458,9 @@ class _ScanScreenState extends State<ScanScreen> {
                               width: 48,
                               height: 48,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
+                                color: Colors.white.o(0.1),
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.1),
-                                ),
+                                border: Border.all(color: Colors.white.o(0.1)),
                               ),
                               child: const Icon(
                                 Icons.keyboard,
@@ -428,7 +469,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               ),
                             ),
                             onTap: () {
-                              // TODO: Manual entry
+                              _openManualEntry();
                             },
                           ),
                         ],
@@ -455,12 +496,10 @@ class _ScanScreenState extends State<ScanScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.o(0.2),
           shape: BoxShape.circle,
           border: Border.all(
-            color: isActive
-                ? primaryColor.withOpacity(0.5)
-                : Colors.white.withOpacity(0.1),
+            color: isActive ? primaryColor.o(0.5) : Colors.white.o(0.1),
           ),
         ),
         child: Icon(
@@ -545,7 +584,7 @@ class _ScanScreenState extends State<ScanScreen> {
           Text(
             label,
             style: GoogleFonts.manrope(
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.o(0.8),
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
