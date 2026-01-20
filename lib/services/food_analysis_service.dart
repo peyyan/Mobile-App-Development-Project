@@ -12,14 +12,18 @@ class FoodResult {
 
 class FoodAnalysisService {
   static const String _apiKey = 'AIzaSyCeXGmp0PK0g_4sO3XPuO5vs4UMKE6DpC4';
+  static const String _modelId = 'gemini-pro-vision';
 
   Future<FoodResult> analyzeFood(String imagePath) async {
     if (_apiKey.isEmpty) {
-      throw Exception('API key is missing or invalid.');
+      throw Exception(
+        'Missing GEMINI_API_KEY. Run: '
+        'flutter run --dart-define=GEMINI_API_KEY=YOUR_KEY',
+      );
     }
 
     try {
-      final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: _apiKey);
+      final model = GenerativeModel(model: _modelId, apiKey: _apiKey);
 
       final imageFile = File(imagePath);
       if (!await imageFile.exists()) {

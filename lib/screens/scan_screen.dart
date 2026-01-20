@@ -148,16 +148,24 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 
   Future<void> _openManualEntry() async {
-    final manualText = await Navigator.of(context).push<String>(
+    final result = await Navigator.of(context).push<ManualEntryResult>(
       MaterialPageRoute(builder: (context) => const ManualEntryScreen()),
     );
-    if (!mounted) return;
-    final text = manualText?.trim();
-    if (text == null || text.isEmpty) return;
+    if (!mounted || result == null) return;
 
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ResultScreen(foodName: text, calories: 0),
+        builder: (context) => ResultScreen(
+          foodName: result.name,
+          calories: result.calories,
+          imageUrl: result.imageUrl,
+          protein: result.protein,
+          carbs: result.carbs,
+          fat: result.fat,
+          fiber: result.fiber,
+          sugar: result.sugar,
+          sodium: result.sodium,
+        ),
       ),
     );
   }

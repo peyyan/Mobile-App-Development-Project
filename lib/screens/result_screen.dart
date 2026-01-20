@@ -15,6 +15,9 @@ class ResultScreen extends StatefulWidget {
     this.protein,
     this.carbs,
     this.fat,
+    this.fiber,
+    this.sugar,
+    this.sodium,
     this.isViewOnly = false,
   });
 
@@ -24,6 +27,9 @@ class ResultScreen extends StatefulWidget {
   final int? protein;
   final int? carbs;
   final int? fat;
+  final int? fiber;
+  final int? sugar;
+  final int? sodium;
   final bool isViewOnly;
 
   @override
@@ -90,6 +96,10 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final fiberValue = widget.fiber ?? 5;
+    final sugarValue = widget.sugar ?? 2;
+    final sodiumValue = widget.sodium ?? 120;
+
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Stack(
@@ -364,21 +374,21 @@ class _ResultScreenState extends State<ResultScreen> {
                             Icons.grass,
                             Colors.green,
                             'Fiber',
-                            '5.2g',
+                            '${fiberValue}g',
                             true,
                           ),
                           _buildMicroRow(
                             Icons.icecream,
                             Colors.pink,
                             'Sugar',
-                            '2.1g',
+                            '${sugarValue}g',
                             true,
                           ),
                           _buildMicroRow(
                             Icons.grain,
                             Colors.blue,
                             'Sodium',
-                            '120mg',
+                            '${sodiumValue}mg',
                             false,
                           ),
                         ],
