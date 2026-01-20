@@ -11,14 +11,11 @@ class FoodResult {
 }
 
 class FoodAnalysisService {
-  static const String _apiKey = String.fromEnvironment('GEMINI_API_KEY');
+  static const String _apiKey = 'AIzaSyCeXGmp0PK0g_4sO3XPuO5vs4UMKE6DpC4';
 
   Future<FoodResult> analyzeFood(String imagePath) async {
     if (_apiKey.isEmpty) {
-      throw Exception(
-        'Missing GEMINI_API_KEY. Run: '
-        'flutter run --dart-define=GEMINI_API_KEY=YOUR_KEY',
-      );
+      throw Exception('API key is missing or invalid.');
     }
 
     try {
