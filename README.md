@@ -96,6 +96,93 @@ Relationship
   </tr>
 </table>
 
+## Summary of Achieved Features
+
+### User Authentication
+- Email and password sign-up and login using Firebase Authentication
+- Google Sign-In integration
+- Authentication gate routes users correctly based on login state
+
+### Onboarding & Calorie Intake Setup
+- Multi-step onboarding profile form collecting:
+  - Age
+  - Gender
+  - Height
+  - Weight
+  - Activity level
+  - Health goal
+- Daily calorie target (TDEE) is calculated automatically
+- User profile and calorie target saved to Firestore
+- Users are redirected to the main application after completing setup
+
+### Food Scanning & Analysis
+- Camera screen with live preview and flash control
+- Food image capture and analysis using the Gemini API
+- Result screen displays detected food name and estimated calories
+
+### Alternate Input Methods
+- Gallery image selection for food analysis
+- Manual text-based food entry for logging meals without image scanning
+
+### History & Results
+- Analysis results can be saved as food logs in Firestore
+- History screen displays logged meals per user
+- Consistent UI styling applied across all screens
+
+---
+
+## Technical Explanation
+
+### Framework & UI
+- Developed using Flutter (Dart) with Material UI
+- Typography implemented using Google Fonts
+- Custom color extension `Color.o(...)` used to manage opacity without deprecated APIs
+
+### Authentication & Data
+- Firebase Authentication handles user registration and login
+- Cloud Firestore stores:
+  - User profiles (daily calorie target, activity level, goal, etc.)
+  - Food logs (food name, calories, timestamp, userId)
+
+### Camera & Media
+- `camera` plugin used for live camera preview and image capture
+- `image_picker` plugin used for selecting images from the gallery
+
+### AI Integration
+- Gemini API integrated using the `google_generative_ai` package
+- Image bytes and structured prompts sent to Gemini for food analysis
+- API responses parsed into a `FoodResult` model containing:
+  - Food name
+  - Estimated calories
+
+### Navigation & Application Flow
+- AuthGate controls routing based on authentication and onboarding completion
+- ScanScreen navigates to ResultScreen after analysis
+- Manual input and gallery selection reuse the same analysis pipeline
+
+---
+
+## Limitations and Future Enhancements
+
+### Current Limitations
+- Gemini API responses can be inconsistent or fail in some cases
+- Food scanning requires a valid API key and active internet connection
+- Nutrient breakdown (protein, carbohydrates, fat) is currently placeholder data
+- History entries use placeholder images
+- Meal filtering is limited to "All" (meal type not stored in logs)
+- Error handling is basic and mainly uses SnackBar notifications
+
+### Future Enhancements
+- Improve AI prompt reliability and add retry and error recovery mechanisms
+- Save actual food images in meal history
+- Add meal type selection (Breakfast, Lunch, Dinner)
+- Store macronutrients and micronutrients in FoodLog
+- Implement offline caching and synchronization
+- Allow users to edit and delete food logs
+- Add analytics features such as daily and weekly summary charts
+- Add in-app settings for API key management and usage tracking
+
+
 ## References
 - Flutter Documentation: https://docs.flutter.dev
 - Firebase Documentation: https://firebase.google.com/docs
