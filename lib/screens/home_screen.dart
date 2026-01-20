@@ -1,10 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../models/user_model.dart';
-import '../models/food_log.dart';
-import '../services/firebase_service.dart';
 import 'profile_screen.dart';
 import 'result_screen.dart';
 import 'scan_screen.dart';
@@ -94,10 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
               decoration: BoxDecoration(
-                color: backgroundLight.withOpacity(0.9),
-                border: Border(
-                  bottom: BorderSide(color: Colors.black.withOpacity(0.05)),
-                ),
+                color: backgroundLight.o(0.9),
+                border: Border(bottom: BorderSide(color: Colors.black.o(0.05))),
               ),
               child: Column(
                 children: [
@@ -121,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: GoogleFonts.manrope(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: textColor.withOpacity(0.5),
+                              color: textColor.o(0.5),
                             ),
                           ),
                         ],
@@ -174,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: primaryColor.withOpacity(0.2),
+                                          color: primaryColor.o(0.2),
                                           blurRadius: 4,
                                           offset: const Offset(0, 2),
                                         ),
@@ -189,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       size: 18,
                                       color: isSelected
                                           ? textColor
-                                          : textColor.withOpacity(0.5),
+                                          : textColor.o(0.5),
                                     ),
                                     const SizedBox(width: 8),
                                   ],
@@ -200,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fontSize: 14,
                                       color: isSelected
                                           ? textColor
-                                          : textColor.withOpacity(0.6),
+                                          : textColor.o(0.6),
                                     ),
                                   ),
                                 ],
@@ -465,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: primaryColor,
             foregroundColor: textColor,
             elevation: 8,
-            shadowColor: primaryColor.withOpacity(0.4),
+            shadowColor: primaryColor.o(0.4),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
@@ -477,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.o(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.filter_center_focus, size: 20),
@@ -502,10 +496,8 @@ class _HomeScreenState extends State<HomeScreen> {
           right: 24,
         ),
         decoration: BoxDecoration(
-          color: backgroundLight.withOpacity(0.95),
-          border: Border(
-            top: BorderSide(color: Colors.black.withOpacity(0.05)),
-          ),
+          color: backgroundLight.o(0.95),
+          border: Border(top: BorderSide(color: Colors.black.o(0.05))),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -534,9 +526,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: color == Colors.grey
-                ? Colors.transparent
-                : color.withOpacity(0.1),
+            color: color == Colors.grey ? Colors.transparent : color.o(0.1),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
@@ -544,7 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: GoogleFonts.manrope(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: color == Colors.grey ? color : color.withOpacity(1.0),
+              color: color == Colors.grey ? color : color.o(1.0),
             ),
           ),
         ),
@@ -628,7 +618,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.0,
-                                  color: textColor.withOpacity(0.4),
+                                  color: textColor.o(0.4),
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -652,7 +642,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: healthColor.withOpacity(0.6),
+                                  color: healthColor.o(0.6),
                                   blurRadius: 8,
                                 ),
                               ],
@@ -667,7 +657,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icon(
                             Icons.local_fire_department,
                             size: 16,
-                            color: textColor.withOpacity(0.5),
+                            color: textColor.o(0.5),
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -675,7 +665,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: GoogleFonts.manrope(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: textColor.withOpacity(0.5),
+                              color: textColor.o(0.5),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -686,7 +676,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: GoogleFonts.manrope(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: textColor.withOpacity(0.5),
+                              color: textColor.o(0.5),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -697,7 +687,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: GoogleFonts.manrope(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: textColor.withOpacity(0.5),
+                              color: textColor.o(0.5),
                             ),
                           ),
                         ],

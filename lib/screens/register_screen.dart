@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nutriscan/utils/color_ext.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -43,9 +44,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Registration failed.')),
-      );
+      debugPrint('Register failed: ${e.code} ${e.message}');
+      final message = e.message ?? 'Registration failed.';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${e.code}: $message')));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -75,7 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(Icons.chevron_left, color: textColor),
                     style: IconButton.styleFrom(
-                      backgroundColor: primaryColor.withOpacity(0.1),
+                      backgroundColor: primaryColor.o(0.1),
                     ),
                   ),
                   Text(
@@ -84,7 +87,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
-                      color: textColor.withOpacity(0.4),
+                      color: textColor.o(0.4),
                     ),
                   ),
                   const SizedBox(width: 48), // Spacer
@@ -97,11 +100,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.1),
+                  color: primaryColor.o(0.1),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.o(0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -130,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.manrope(
                   fontSize: 16,
-                  color: textColor.withOpacity(0.6),
+                  color: textColor.o(0.6),
                   height: 1.5,
                 ),
               ),
@@ -171,7 +174,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     backgroundColor: primaryColor,
                     foregroundColor: textColor,
                     elevation: 0,
-                    shadowColor: primaryColor.withOpacity(0.4),
+                    shadowColor: primaryColor.o(0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -204,9 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 children: [
                   Text(
                     'Already have an account?',
-                    style: GoogleFonts.manrope(
-                      color: textColor.withOpacity(0.6),
-                    ),
+                    style: GoogleFonts.manrope(color: textColor.o(0.6)),
                   ),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
@@ -248,13 +249,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               fontSize: 12,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
-              color: textColor.withOpacity(0.8),
+              color: textColor.o(0.8),
             ),
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.o(0.03),
             borderRadius: BorderRadius.circular(12),
           ),
           child: TextField(
@@ -266,16 +267,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
-              prefixIcon: Icon(
-                icon,
-                color: textColor.withOpacity(0.4),
-                size: 20,
-              ),
+              prefixIcon: Icon(icon, color: textColor.o(0.4), size: 20),
               suffixIcon: isPassword
                   ? IconButton(
                       icon: Icon(
                         obscureText ? Icons.visibility : Icons.visibility_off,
-                        color: textColor.withOpacity(0.4),
+                        color: textColor.o(0.4),
                         size: 20,
                       ),
                       onPressed: onToggleVisibility,
@@ -291,7 +288,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   : label.contains('EMAIL')
                   ? 'hello@example.com'
                   : '',
-              hintStyle: TextStyle(color: textColor.withOpacity(0.3)),
+              hintStyle: TextStyle(color: textColor.o(0.3)),
             ),
           ),
         ),

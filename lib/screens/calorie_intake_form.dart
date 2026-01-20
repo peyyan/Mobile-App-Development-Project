@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nutriscan/utils/color_ext.dart';
 
 class CalorieIntakeForm extends StatefulWidget {
   const CalorieIntakeForm({super.key});
@@ -281,9 +282,9 @@ class _CalorieIntakeFormState extends State<CalorieIntakeForm> {
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: const Color(0xFF00D563),
-              inactiveTrackColor: const Color(0xFF00D563).withOpacity(0.2),
+              inactiveTrackColor: const Color(0xFF00D563).o(0.2),
               thumbColor: const Color(0xFF00D563),
-              overlayColor: const Color(0xFF00D563).withOpacity(0.1),
+              overlayColor: const Color(0xFF00D563).o(0.1),
               trackHeight: 6,
             ),
             child: Slider(
@@ -481,7 +482,7 @@ class _CalorieIntakeFormState extends State<CalorieIntakeForm> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF00D563).withOpacity(0.3),
+                    color: const Color(0xFF00D563).o(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -551,9 +552,9 @@ class _CalorieIntakeFormState extends State<CalorieIntakeForm> {
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: const Color(0xFF00D563),
-            inactiveTrackColor: const Color(0xFF00D563).withOpacity(0.2),
+            inactiveTrackColor: const Color(0xFF00D563).o(0.2),
             thumbColor: const Color(0xFF00D563),
-            overlayColor: const Color(0xFF00D563).withOpacity(0.1),
+            overlayColor: const Color(0xFF00D563).o(0.1),
             trackHeight: 6,
           ),
           child: Slider(
@@ -605,7 +606,7 @@ class _CalorieIntakeFormState extends State<CalorieIntakeForm> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.white,
+          color: isSelected ? color.o(0.1) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? color : Colors.grey[200]!,

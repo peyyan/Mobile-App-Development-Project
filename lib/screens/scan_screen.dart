@@ -1,9 +1,9 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nutriscan/utils/color_ext.dart';
 
 import '../services/mock_food_api_service.dart';
-import '../models/manual_food_item.dart';
 import 'result_screen.dart';
 
 class ScanScreen extends StatefulWidget {
@@ -74,28 +74,24 @@ class _ScanScreenState extends State<ScanScreen> {
 
     try {
       await _controller!.setFlashMode(newMode);
+      if (!mounted) return;
       setState(() => _flashMode = newMode);
     } catch (e) {
       debugPrint('Error toggling flash: $e');
     }
   }
 
-  Future<void> _captureAndAnalyze() async {
-    if (_controller == null || !_controller!.value.isInitialized) return;
+  Future<void> _runAnalysis(String imagePath) async {
     if (_isProcessing) return;
-
     setState(() => _isProcessing = true);
     try {
-      final picture = await _controller!.takePicture();
-      // In a real app, we might crop based on the reticle here.
-
-      // Mock Analysis
-      final result = await MockFoodApiService().analyzeFood(picture.path);
+      final result = await MockFoodApiService().analyzeFood(imagePath);
       if (!mounted) return;
 
       // Turn off flash before navigating if it was on torch mode
-      if (_flashMode == FlashMode.torch) {
+      if (_flashMode == FlashMode.torch && _controller != null) {
         await _controller!.setFlashMode(FlashMode.off);
+        if (!mounted) return;
         setState(() => _flashMode = FlashMode.off);
       }
 
@@ -108,176 +104,15 @@ class _ScanScreenState extends State<ScanScreen> {
         ),
       );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Scan failed. Try again.')),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Scan failed. Try again.')));
     } finally {
       if (mounted) {
         setState(() => _isProcessing = false);
       }
     }
-  }
-
-  void _showManualEntrySheet() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.9,
-        builder: (context, scrollController) {
-          return Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-            ),
-            child: Column(
-              children: [
-                // Handle
-                Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 12, bottom: 24),
-                    width: 48,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-
-                // Title
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    children: [
-                      Icon(Icons.restaurant_menu, color: primaryColor),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Manual Food Entry',
-                        style: GoogleFonts.manrope(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF0d1b12),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // List
-                Expanded(
-                  child: ListView(
-                    controller: scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    children: [
-                      _buildFoodCategory('Malaysian Favorites', [
-                        ManualFoodItem(
-                          'Nasi Lemak',
-                          644,
-                          'https://lh3.googleusercontent.com/aida-public/AB6AXuM0h-L_g5UqYtG5-0c7f1_e1M2G9N0xLw0_Z5a2_J7t1_h9_K0r5_Z0q_X8J5_V4_R3_T6_Y9_U0_I2_O5_P8_L3_M1',
-                        ),
-                        ManualFoodItem(
-                          'Roti Canai',
-                          300,
-                          'https://lh3.googleusercontent.com/aida-public/AB6AXuP9_Q4_R5_S1_T7_U2_V5_W8_X3_Y6_Z9_A2_B5_C8_D1_E4_F7_G0_H3_I6_J9_K2_L5_M8_N1_O4_P7',
-                        ),
-                        ManualFoodItem('Teh Tarik', 90, ''),
-                        ManualFoodItem('Fried Rice (Kampung)', 500, ''),
-                        ManualFoodItem('Curry Mee', 450, ''),
-                      ]),
-                      const SizedBox(height: 24),
-                      _buildFoodCategory('Staples & Basics', [
-                        ManualFoodItem('White Rice (1 cup)', 200, ''),
-                        ManualFoodItem('Fried Chicken (1 pc)', 260, ''),
-                        ManualFoodItem('Bread (White/Wholemeal)', 80, ''),
-                        ManualFoodItem('Milk (1 glass)', 150, ''),
-                        ManualFoodItem('Boiled Egg', 70, ''),
-                      ]),
-                      const SizedBox(height: 40),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildFoodCategory(String title, List<ManualFoodItem> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 12),
-          child: Text(
-            title,
-            style: GoogleFonts.manrope(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
-            ),
-          ),
-        ),
-        ...items.map((item) => _buildFoodItemTile(item)),
-      ],
-    );
-  }
-
-  Widget _buildFoodItemTile(ManualFoodItem item) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: ListTile(
-        onTap: () {
-          Navigator.pop(context); // Close sheet
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ResultScreen(
-                foodName: item.name,
-                calories: item.calories,
-                imageUrl: item.imageUrl.isNotEmpty ? item.imageUrl : null,
-              ),
-            ),
-          );
-        },
-        leading: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: primaryColor.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(Icons.add, color: primaryColor, size: 20),
-        ),
-        title: Text(
-          item.name,
-          style: GoogleFonts.manrope(
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF0d1b12),
-          ),
-        ),
-        trailing: Text(
-          '${item.calories} kcal',
-          style: GoogleFonts.manrope(
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[500],
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -324,7 +159,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                  colors: [Colors.black.o(0.7), Colors.transparent],
                 ),
               ),
             ),
@@ -340,7 +175,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [Colors.black.withOpacity(0.8), Colors.transparent],
+                  colors: [Colors.black.o(0.8), Colors.transparent],
                 ),
               ),
             ),
@@ -415,11 +250,11 @@ class _ScanScreenState extends State<ScanScreen> {
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: primaryColor.withOpacity(0.8),
+                            color: primaryColor.o(0.8),
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: primaryColor.withOpacity(0.5),
+                                color: primaryColor.o(0.5),
                                 blurRadius: 10,
                                 spreadRadius: 2,
                               ),
@@ -452,7 +287,7 @@ class _ScanScreenState extends State<ScanScreen> {
                   style: GoogleFonts.manrope(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.o(0.8),
                     shadows: [
                       const Shadow(
                         blurRadius: 2,
@@ -481,11 +316,9 @@ class _ScanScreenState extends State<ScanScreen> {
                     Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.o(0.4),
                         borderRadius: BorderRadius.circular(22),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                        ),
+                        border: Border.all(color: Colors.white.o(0.1)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -512,7 +345,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.o(0.2),
                                   width: 2,
                                 ),
                                 image: const DecorationImage(
@@ -526,7 +359,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               ),
                             ),
                             onTap: () {
-                              // TODO: Gallery navigation
+                              _openGallery();
                             },
                           ),
 
@@ -550,7 +383,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: primaryColor.withOpacity(0.4),
+                                      color: primaryColor.o(0.4),
                                       blurRadius: 20,
                                       spreadRadius: 2,
                                     ),
@@ -576,11 +409,9 @@ class _ScanScreenState extends State<ScanScreen> {
                               width: 48,
                               height: 48,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
+                                color: Colors.white.o(0.1),
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.1),
-                                ),
+                                border: Border.all(color: Colors.white.o(0.1)),
                               ),
                               child: const Icon(
                                 Icons.keyboard,
@@ -588,7 +419,9 @@ class _ScanScreenState extends State<ScanScreen> {
                                 size: 24,
                               ),
                             ),
-                            onTap: _showManualEntrySheet,
+                            onTap: () {
+                              // TODO: Manual entry
+                            },
                           ),
                         ],
                       ),
@@ -614,12 +447,10 @@ class _ScanScreenState extends State<ScanScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.o(0.2),
           shape: BoxShape.circle,
           border: Border.all(
-            color: isActive
-                ? primaryColor.withOpacity(0.5)
-                : Colors.white.withOpacity(0.1),
+            color: isActive ? primaryColor.o(0.5) : Colors.white.o(0.1),
           ),
         ),
         child: Icon(
@@ -704,7 +535,7 @@ class _ScanScreenState extends State<ScanScreen> {
           Text(
             label,
             style: GoogleFonts.manrope(
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.o(0.8),
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
