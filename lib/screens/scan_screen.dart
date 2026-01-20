@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../services/mock_food_api_service.dart';
+import '../models/manual_food_item.dart';
 import 'result_screen.dart';
 
 class ScanScreen extends StatefulWidget {
@@ -117,6 +118,166 @@ class _ScanScreenState extends State<ScanScreen> {
         setState(() => _isProcessing = false);
       }
     }
+  }
+
+  void _showManualEntrySheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              children: [
+                // Handle
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 12, bottom: 24),
+                    width: 48,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+
+                // Title
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: [
+                      Icon(Icons.restaurant_menu, color: primaryColor),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Manual Food Entry',
+                        style: GoogleFonts.manrope(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF0d1b12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // List
+                Expanded(
+                  child: ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    children: [
+                      _buildFoodCategory('Malaysian Favorites', [
+                        ManualFoodItem(
+                          'Nasi Lemak',
+                          644,
+                          'https://lh3.googleusercontent.com/aida-public/AB6AXuM0h-L_g5UqYtG5-0c7f1_e1M2G9N0xLw0_Z5a2_J7t1_h9_K0r5_Z0q_X8J5_V4_R3_T6_Y9_U0_I2_O5_P8_L3_M1',
+                        ),
+                        ManualFoodItem(
+                          'Roti Canai',
+                          300,
+                          'https://lh3.googleusercontent.com/aida-public/AB6AXuP9_Q4_R5_S1_T7_U2_V5_W8_X3_Y6_Z9_A2_B5_C8_D1_E4_F7_G0_H3_I6_J9_K2_L5_M8_N1_O4_P7',
+                        ),
+                        ManualFoodItem('Teh Tarik', 90, ''),
+                        ManualFoodItem('Fried Rice (Kampung)', 500, ''),
+                        ManualFoodItem('Curry Mee', 450, ''),
+                      ]),
+                      const SizedBox(height: 24),
+                      _buildFoodCategory('Staples & Basics', [
+                        ManualFoodItem('White Rice (1 cup)', 200, ''),
+                        ManualFoodItem('Fried Chicken (1 pc)', 260, ''),
+                        ManualFoodItem('Bread (White/Wholemeal)', 80, ''),
+                        ManualFoodItem('Milk (1 glass)', 150, ''),
+                        ManualFoodItem('Boiled Egg', 70, ''),
+                      ]),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFoodCategory(String title, List<ManualFoodItem> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8, bottom: 12),
+          child: Text(
+            title,
+            style: GoogleFonts.manrope(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[600],
+            ),
+          ),
+        ),
+        ...items.map((item) => _buildFoodItemTile(item)),
+      ],
+    );
+  }
+
+  Widget _buildFoodItemTile(ManualFoodItem item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: ListTile(
+        onTap: () {
+          Navigator.pop(context); // Close sheet
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResultScreen(
+                foodName: item.name,
+                calories: item.calories,
+                imageUrl: item.imageUrl.isNotEmpty ? item.imageUrl : null,
+              ),
+            ),
+          );
+        },
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: primaryColor.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.add, color: primaryColor, size: 20),
+        ),
+        title: Text(
+          item.name,
+          style: GoogleFonts.manrope(
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF0d1b12),
+          ),
+        ),
+        trailing: Text(
+          '${item.calories} kcal',
+          style: GoogleFonts.manrope(
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[500],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -427,9 +588,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                 size: 24,
                               ),
                             ),
-                            onTap: () {
-                              // TODO: Manual entry
-                            },
+                            onTap: _showManualEntrySheet,
                           ),
                         ],
                       ),

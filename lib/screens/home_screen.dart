@@ -1,6 +1,10 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../models/user_model.dart';
+import '../models/food_log.dart';
+import '../services/firebase_service.dart';
 import 'profile_screen.dart';
 import 'result_screen.dart';
 import 'scan_screen.dart';
@@ -213,173 +217,233 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Main Content
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 24,
+              child: StreamBuilder<UserModel?>(
+                stream: FirebaseService().getUser(
+                  FirebaseAuth.instance.currentUser?.uid ?? '',
                 ),
-                children: [
-                  // Today Section
-                  _buildSectionHeader('Today', '1240 kcal', primaryColor),
-                  const SizedBox(height: 16),
-                  _buildMealCard(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ResultScreen(
-                          foodName: 'Avocado Toast',
-                          calories: 350,
-                          imageUrl:
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuDXrzaAaY5DRV_A0zpW-XljYGDxyoZZ9TLlej4q-43_QoRP4CnAqfe7CoGA86vP0_3Ra4JLNpjSSSL8e4w846YMbS071EC48k8t0r7JzMJBy5kuVDcgBwjNS52kDsKukzrRN_5VC4WAhjFbldrPyAMXE7DOHB3X_AkV8YdP3OhOeQm_BoZ_0cQoEOpMiGD0bhi7DyY8pbjrMxwOiCyevDzkRH8dDn5y_4rcmxS_kGG28Ib7XRLnrwGU8OLyZmNKTOAet_8aArPHIjU',
-                          protein: 12,
-                          fat: 18,
-                          carbs: 45,
-                          isViewOnly: true,
-                        ),
-                      ),
-                    ),
-                    title: 'Avocado Toast',
-                    category: 'Breakfast',
-                    imageUri:
-                        'https://lh3.googleusercontent.com/aida-public/AB6AXuDXrzaAaY5DRV_A0zpW-XljYGDxyoZZ9TLlej4q-43_QoRP4CnAqfe7CoGA86vP0_3Ra4JLNpjSSSL8e4w846YMbS071EC48k8t0r7JzMJBy5kuVDcgBwjNS52kDsKukzrRN_5VC4WAhjFbldrPyAMXE7DOHB3X_AkV8YdP3OhOeQm_BoZ_0cQoEOpMiGD0bhi7DyY8pbjrMxwOiCyevDzkRH8dDn5y_4rcmxS_kGG28Ib7XRLnrwGU8OLyZmNKTOAet_8aArPHIjU',
-                    calories: 350,
-                    protein: 12,
-                    fat: 18,
-                    healthType: HealthScoreType.good,
-                    primaryColor: primaryColor,
-                    cardColor: cardLight,
-                    textColor: textColor,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildMealCard(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ResultScreen(
-                          foodName: 'Chicken Caesar Wrap',
-                          calories: 520,
-                          imageUrl:
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuBi38-Bk6Kxn0f3cIeZREjDguJYQb6DE1mDBpDxEOJO0mmhRwM6G-0_HsSMRnWniHEwhjbKDLk2Ad2HztX3q79_AGtMq-MjZlRW8DzCSSXpXR-iH2ExabzvxikaOMLv69_MaZJzZ6IyYIbatVpfgKyb2WfLWmF6NOTN3wBubY6y1AK-R0oU6VO7RiAnJitppEUzGZV-wqf4sPThOi5V83S-enBgv58IbI9mcKM54PwmoRBLxWIbaBied4JHz4cHN8YAuz-_iZrNzts',
-                          protein: 35,
-                          fat: 22,
-                          carbs: 40,
-                          isViewOnly: true,
-                        ),
-                      ),
-                    ),
-                    title: 'Chicken Caesar Wrap',
-                    category: 'Lunch',
-                    imageUri:
-                        'https://lh3.googleusercontent.com/aida-public/AB6AXuBi38-Bk6Kxn0f3cIeZREjDguJYQb6DE1mDBpDxEOJO0mmhRwM6G-0_HsSMRnWniHEwhjbKDLk2Ad2HztX3q79_AGtMq-MjZlRW8DzCSSXpXR-iH2ExabzvxikaOMLv69_MaZJzZ6IyYIbatVpfgKyb2WfLWmF6NOTN3wBubY6y1AK-R0oU6VO7RiAnJitppEUzGZV-wqf4sPThOi5V83S-enBgv58IbI9mcKM54PwmoRBLxWIbaBied4JHz4cHN8YAuz-_iZrNzts',
-                    calories: 520,
-                    protein: 35,
-                    fat: 22,
-                    healthType: HealthScoreType.moderate,
-                    primaryColor: primaryColor,
-                    cardColor: cardLight,
-                    textColor: textColor,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildMealCard(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ResultScreen(
-                          foodName: 'Greek Yogurt & Berries',
-                          calories: 180,
-                          imageUrl:
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuBUbX6ej0crAM7b6bRXMfcLcdPvzMQB10Awio7urPMIh01xmncMIWowzUXe2hrlUWiiUzdSHnAk8j5-GllafamDJBMCFaEnkwGSg1RodXCpUS-ddQlHtok-V7geKYRIhMIbtxVYrPvREInPWVfmvCYsu4IXJcMO0K2C13yfxV64NbKKa81GPfAfmH1Xm7xHmSb316mcQ-o4OX5GE_dDIoRB0aw17_3FsIC-lt8Z7RT8qFYu7lYoi16wMb8reZrjyssxZ1GEht2K-wA',
-                          protein: 15,
-                          fat: 0,
-                          carbs: 25,
-                          isViewOnly: true,
-                        ),
-                      ),
-                    ),
-                    title: 'Greek Yogurt & Berries',
-                    category: 'Snack',
-                    imageUri:
-                        'https://lh3.googleusercontent.com/aida-public/AB6AXuBUbX6ej0crAM7b6bRXMfcLcdPvzMQB10Awio7urPMIh01xmncMIWowzUXe2hrlUWiiUzdSHnAk8j5-GllafamDJBMCFaEnkwGSg1RodXCpUS-ddQlHtok-V7geKYRIhMIbtxVYrPvREInPWVfmvCYsu4IXJcMO0K2C13yfxV64NbKKa81GPfAfmH1Xm7xHmSb316mcQ-o4OX5GE_dDIoRB0aw17_3FsIC-lt8Z7RT8qFYu7lYoi16wMb8reZrjyssxZ1GEht2K-wA',
-                    calories: 180,
-                    protein: 15,
-                    fat: 0,
-                    healthType: HealthScoreType.good,
-                    primaryColor: primaryColor,
-                    cardColor: cardLight,
-                    textColor: textColor,
-                  ),
+                builder: (context, snapshot) {
+                  final user = snapshot.data;
+                  final targetCalories = user?.targetCalories ?? 2000;
+                  final goal = user?.goal ?? 'maintain';
 
-                  const SizedBox(height: 24),
-                  Divider(color: Colors.grey[200]),
-                  const SizedBox(height: 24),
+                  String goalText;
+                  if (goal == 'lose') {
+                    goalText = 'Deficit Goal';
+                  } else if (goal == 'gain') {
+                    goalText = 'Surplus Goal';
+                  } else {
+                    goalText = 'Maintenance';
+                  }
 
-                  // Yesterday Section
-                  _buildSectionHeader('Yesterday', '2100 kcal', Colors.grey),
-                  const SizedBox(height: 16),
-                  Opacity(
-                    opacity: 0.8,
-                    child: _buildMealCard(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ResultScreen(
-                            foodName: 'Spaghetti Carbonara',
-                            calories: 800,
-                            imageUrl:
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuCvEgt4xcVRbkP14UQNqVhA07lUDoDi8wfPD--lMB9IluN5wWIrHdLXtP2Lt3JDAOfrgCMdmwVZg-QRyuI5dDEWnFVcHj9ftK-oOFve9vydlrufmEUAOrcoROEXifP5L1aQ_Dh0N7nqR-3bPNQ4QrK97p9Qf4H8hn729pRRZFozOv7eewjLTdrWI6okJEPZ3DSQh20UHRdznjGBLNwcrH5mE-3AYxSgWMSYYa5PAy8m_7OJaXjPRg8rB7hjCChG3aiPO1L7rmmGS64',
-                            protein: 25,
-                            fat: 40,
-                            carbs: 85,
-                            isViewOnly: true,
-                          ),
-                        ),
-                      ),
-                      title: 'Spaghetti Carbonara',
-                      category: 'Dinner',
-                      imageUri:
-                          'https://lh3.googleusercontent.com/aida-public/AB6AXuCvEgt4xcVRbkP14UQNqVhA07lUDoDi8wfPD--lMB9IluN5wWIrHdLXtP2Lt3JDAOfrgCMdmwVZg-QRyuI5dDEWnFVcHj9ftK-oOFve9vydlrufmEUAOrcoROEXifP5L1aQ_Dh0N7nqR-3bPNQ4QrK97p9Qf4H8hn729pRRZFozOv7eewjLTdrWI6okJEPZ3DSQh20UHRdznjGBLNwcrH5mE-3AYxSgWMSYYa5PAy8m_7OJaXjPRg8rB7hjCChG3aiPO1L7rmmGS64',
-                      calories: 800,
-                      protein: 25,
-                      fat: 40, // High carb implied by calories/context
-                      healthType: HealthScoreType.bad,
-                      primaryColor: primaryColor,
-                      cardColor: cardLight,
-                      textColor: textColor,
+                  return StreamBuilder<List<FoodLog>>(
+                    stream: FirebaseService().getFoodLogsStream(
+                      FirebaseAuth.instance.currentUser?.uid ?? '',
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Opacity(
-                    opacity: 0.8,
-                    child: _buildMealCard(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ResultScreen(
-                            foodName: 'Chocolate Protein Shake',
-                            calories: 140,
-                            imageUrl:
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuDBobsYuWoUCCdrU9I30LnrxSZHHoZ53syxDSYMUyp_wpxbRa0mI4PE-_SNxfw3qsrAz77HKlYTT3hL5a8lj8zly2sJ-eAzAJHZVQqaUZlLy9ke6Js4W8PihsEv9pg5Din6J9kwhJFBPpYMgM8kRqADiFgmiJe88sF2Pw0tsiXhsPbqCLXey0oW2Usr6dfyHLMtIisMYhoLoCpajy32u5qJwucyX5UfmpxCyPKFyP9FGmwzVwArKHOwnETp1dimJOiltWup61JbRzA',
-                            protein: 24,
-                            fat: 2,
-                            carbs: 8,
-                            isViewOnly: true,
+                    builder: (context, logSnapshot) {
+                      if (logSnapshot.hasError) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(
+                              'Error loading data: ${logSnapshot.error}',
+                              style: const TextStyle(color: Colors.red),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
+                        );
+                      }
+
+                      if (logSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      final logs = logSnapshot.data ?? [];
+
+                      // Filter by selected date
+                      final selectedLogs = logs.where((log) {
+                        return log.timestamp.year == _selectedDate.year &&
+                            log.timestamp.month == _selectedDate.month &&
+                            log.timestamp.day == _selectedDate.day;
+                      }).toList();
+
+                      // Calculate total calories
+                      final totalCalories = selectedLogs.fold<int>(
+                        0,
+                        (sum, item) => sum + item.calories,
+                      );
+
+                      // Categorize Logs
+                      final Map<String, List<FoodLog>> categorizedLogs = {
+                        'Breakfast': [],
+                        'Lunch': [],
+                        'Dinner': [],
+                        'Snack': [],
+                        'Supper': [],
+                      };
+
+                      for (var log in selectedLogs) {
+                        if (categorizedLogs.containsKey(log.mealType)) {
+                          categorizedLogs[log.mealType]!.add(log);
+                        } else if (log.mealType == 'Evening Tea') {
+                          categorizedLogs['Snack']!.add(log);
+                        } else {
+                          // Default to Snack if unknown
+                          categorizedLogs['Snack']!.add(log);
+                        }
+                      }
+
+                      return ListView(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 24,
                         ),
-                      ),
-                      title: 'Chocolate Protein Shake',
-                      category: 'Snack',
-                      imageUri:
-                          'https://lh3.googleusercontent.com/aida-public/AB6AXuDBobsYuWoUCCdrU9I30LnrxSZHHoZ53syxDSYMUyp_wpxbRa0mI4PE-_SNxfw3qsrAz77HKlYTT3hL5a8lj8zly2sJ-eAzAJHZVQqaUZlLy9ke6Js4W8PihsEv9pg5Din6J9kwhJFBPpYMgM8kRqADiFgmiJe88sF2Pw0tsiXhsPbqCLXey0oW2Usr6dfyHLMtIisMYhoLoCpajy32u5qJwucyX5UfmpxCyPKFyP9FGmwzVwArKHOwnETp1dimJOiltWup61JbRzA',
-                      calories: 140,
-                      protein: 24,
-                      fat: 2,
-                      healthType: HealthScoreType.good,
-                      primaryColor: primaryColor,
-                      cardColor: cardLight,
-                      textColor: textColor,
-                    ),
-                  ),
-                ],
+                        children: [
+                          // Goal Header
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 24),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: primaryColor.withOpacity(0.2),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Daily Target',
+                                      style: GoogleFonts.manrope(
+                                        fontSize: 14,
+                                        color: textColor.withOpacity(0.6),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      goalText,
+                                      style: GoogleFonts.manrope(
+                                        fontSize: 16,
+                                        color: primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      '$targetCalories',
+                                      style: GoogleFonts.manrope(
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.bold,
+                                        color: textColor,
+                                        height: 1,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 4),
+                                      child: Text(
+                                        'kcal',
+                                        style: GoogleFonts.manrope(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: textColor.withOpacity(0.5),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Today Summary
+                          _buildSectionHeader(
+                            'Total Intake',
+                            '$totalCalories / $targetCalories kcal',
+                            primaryColor,
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Meal Categories
+                          ...categorizedLogs.entries.map((entry) {
+                            if (entry.value.isEmpty)
+                              return const SizedBox.shrink();
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: Text(
+                                    entry.key.toUpperCase(),
+                                    style: GoogleFonts.manrope(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[500],
+                                      letterSpacing: 1.0,
+                                    ),
+                                  ),
+                                ),
+                                ...entry.value.map(
+                                  (log) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: _buildMealCard(
+                                      title: log.foodName,
+                                      category: entry.key,
+                                      imageUri:
+                                          'https://lh3.googleusercontent.com/aida-public/AB6AXuCj3Ru18d53PPXAfoR5OeiVvCVVEAG3uXzY8KgzeE7IAwCRL8hDsD_yP-cPLa_c2Ijx53kDran0hbioFtR2YLNEmOwOLt0nI1xbq6YG9q8DT-eeS05Pj2lMcl6hevOWDtoLaThmXferFUn6EkpBnC9b7V2FstJH2WUtvuYH8MUiuSpnaaA0WEPb7FjpWcfSLG64cQTeZpZl0A7GFMndue61ZnBuzAjo0jcQ19T0MibMKxKeGyvU5wspU5UDhnL1guLDv4RQXOCrzs8', // Placeholder or add image to FoodLog
+                                      calories: log.calories,
+                                      protein:
+                                          0, // TODO: Add macro support to FoodLog
+                                      fat: 0,
+                                      healthType: HealthScoreType
+                                          .good, // Dynamic logic needed later
+                                      primaryColor: primaryColor,
+                                      cardColor: cardLight,
+                                      textColor: textColor,
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ResultScreen(
+                                            foodName: log.foodName,
+                                            calories: log.calories,
+                                            isViewOnly: true,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                            );
+                          }).toList(),
+
+                          if (selectedLogs.isEmpty)
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32),
+                                child: Text(
+                                  'No meals logged for this day',
+                                  style: GoogleFonts.manrope(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],

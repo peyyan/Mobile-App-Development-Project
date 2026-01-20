@@ -31,6 +31,15 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen> {
   bool _isSaving = false;
+  String _selectedMealType = 'Breakfast';
+
+  final List<String> _mealTypes = [
+    'Breakfast',
+    'Lunch',
+    'Dinner',
+    'Supper',
+    'Snack',
+  ];
 
   // Colors from design
   static const primaryColor = Color(0xFF13ec5b);
@@ -55,6 +64,7 @@ class _ResultScreenState extends State<ResultScreen> {
         foodName: widget.foodName,
         calories: widget.calories,
         timestamp: DateTime.now(),
+        mealType: _selectedMealType,
       );
       await FirebaseService().saveFoodLog(log);
       if (mounted) {
@@ -169,7 +179,7 @@ class _ResultScreenState extends State<ResultScreen> {
                         Icon(Icons.schedule, size: 18, color: Colors.grey[500]),
                         const SizedBox(width: 4),
                         Text(
-                          'Lunch • 12:30 PM',
+                          'Select Meal Type',
                           style: GoogleFonts.manrope(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -193,6 +203,54 @@ class _ResultScreenState extends State<ResultScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
+
+                    // Meal Type Selector
+                    if (!widget.isViewOnly) ...[
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _mealTypes.map((type) {
+                            final isSelected = _selectedMealType == type;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: InkWell(
+                                onTap: () =>
+                                    setState(() => _selectedMealType = type),
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? primaryColor
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? primaryColor
+                                          : Colors.grey[300]!,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    type,
+                                    style: GoogleFonts.manrope(
+                                      color: isSelected
+                                          ? textColor
+                                          : Colors.grey[600],
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
 
                     // Calories
                     Column(

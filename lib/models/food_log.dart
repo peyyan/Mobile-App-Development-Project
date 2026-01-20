@@ -6,6 +6,7 @@ class FoodLog {
   final String foodName;
   final int calories;
   final DateTime timestamp;
+  final String mealType;
 
   FoodLog({
     required this.id,
@@ -13,6 +14,7 @@ class FoodLog {
     required this.foodName,
     required this.calories,
     required this.timestamp,
+    required this.mealType,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,6 +23,7 @@ class FoodLog {
       'foodName': foodName,
       'calories': calories,
       'timestamp': Timestamp.fromDate(timestamp),
+      'mealType': mealType,
     };
   }
 
@@ -30,9 +33,26 @@ class FoodLog {
     if (rawTimestamp is Timestamp) {
       parsedTimestamp = rawTimestamp.toDate();
     } else if (rawTimestamp is String) {
-      parsedTimestamp = DateTime.tryParse(rawTimestamp)?.toLocal() ?? DateTime.now();
+      parsedTimestamp =
+          DateTime.tryParse(rawTimestamp)?.toLocal() ?? DateTime.now();
     } else {
       parsedTimestamp = DateTime.now();
+    }
+
+    String mealType = map['mealType'] as String? ?? '';
+    if (mealType.isEmpty) {
+      final hour = parsedTimestamp.hour;
+      if (hour >= 4 && hour < 12) {
+        mealType = 'Breakfast';
+      } else if (hour >= 12 && hour < 16) {
+        mealType = 'Lunch';
+      } else if (hour >= 16 && hour < 19) {
+        mealType = 'Evening Tea';
+      } else if (hour >= 19) {
+        mealType = 'Dinner';
+      } else {
+        mealType = 'Supper';
+      }
     }
 
     return FoodLog(
@@ -41,6 +61,7 @@ class FoodLog {
       foodName: map['foodName'] as String? ?? 'Unknown',
       calories: (map['calories'] as num?)?.toInt() ?? 0,
       timestamp: parsedTimestamp,
+      mealType: mealType,
     );
   }
 }
