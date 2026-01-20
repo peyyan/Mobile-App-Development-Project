@@ -26,13 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   List<FoodLog> _logs = [];
 
-  final List<String> _filters = [
-    'All',
-    'Breakfast',
-    'Lunch',
-    'Dinner',
-    'Snack',
-  ];
+  final List<String> _filters = ['All'];
 
   @override
   void initState() {
@@ -118,15 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
           log.timestamp.day == _selectedDate.day;
     }).toList();
 
-    if (_selectedFilter == 'All') {
-      return logsForDate;
-    }
-
-    return logsForDate
-        .where(
-          (log) => log.mealType.toLowerCase() == _selectedFilter.toLowerCase(),
-        )
-        .toList();
+    return logsForDate;
   }
 
   @override
@@ -310,9 +296,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             title: log.foodName,
-                            category: log.mealType.isEmpty
-                                ? 'Logged'
-                                : log.mealType,
+                            category: 'Logged',
                             imageUri:
                                 'https://lh3.googleusercontent.com/aida-public/AB6AXuBtf0sbyZ6NQ2hwzR-3IKuY-Ws7EC5Z895meiDc-HpNhYVjyj3_KvwB4FsAGy7dZVvuYih7KMd7om0fvyph4V5WfrfgsQqlLgpRxM5ZtSjqapYmD1UPTzQ2DNGyVeXX5A9LeNs5R54zcCqM8Ha8-0JUQ7oPeT_1C_PqytAXS8uKfzNArK07hWVcoewNuvzU5jlNR5o6s0djdWUlsf3UEYP6N-KWhmGqobU_8MtxKls9DBwk8kJOyB0zmCqjF-ss7JU_fYkuQRhOe2M',
                             calories: log.calories,
