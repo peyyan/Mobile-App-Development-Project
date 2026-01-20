@@ -81,6 +81,31 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
+  Future<void> _captureAndAnalyze() async {
+    if (_controller == null ||
+        !_controller!.value.isInitialized ||
+        _isProcessing) {
+      return;
+    }
+
+    try {
+      final image = await _controller!.takePicture();
+      await _runAnalysis(image.path);
+    } catch (e) {
+      debugPrint('Error capturing image: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to capture image')),
+        );
+      }
+    }
+  }
+
+  Future<void> _openGallery() async {
+    // TODO: Implement gallery selection
+    debugPrint('Open gallery tapped');
+  }
+
   Future<void> _runAnalysis(String imagePath) async {
     if (_isProcessing) return;
     setState(() => _isProcessing = true);
