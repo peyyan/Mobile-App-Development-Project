@@ -182,6 +182,23 @@ Relationship
 - Add analytics features such as daily and weekly summary charts
 - Add in-app settings for API key management and usage tracking
 
+### Final UI
+### Summary of achieved features 
+The development of NutriScan achieved several key functional milestones. First, User Authentication and Security were successfully implemented using Firebase Authentication, ensuring that user sessions are managed securely and unauthenticated users are restricted from accessing the app. To provide value beyond simple logging, the team implemented a Personalized Calorie Estimation feature. This creates a unique profile for each user by collecting their health data during onboarding and automatically calculating a Total Daily Energy Expenditure (TDEE). This ensures that every user has a specific, scientifically calculated calorie goal stored in the cloud.
+
+Regarding core functionality, the application supports Food Logging and Tracking via a robust manual entry system. While the initial plan relied heavily on AI scanning, the manual feature serves as a critical fallback, allowing users to input food names and calories effectively. As users submit logs, the application utilizes real-time streams to update the dashboard instantly. Additionally, the Camera Interface is fully integrated with the device hardware, successfully initializing the camera controller and displaying a live feed. Finally, all user data is backed by Cloud Storage using Firestore, ensuring that meal history is preserved and easily retrievable across sessions.
+
+### Technical explanation
+The application is architected using the Flutter framework for the frontend, employing a modular widget structure to ensure code maintainability. The backend is built on a Serverless Architecture using Firebase. Firebase Authentication manages identity, while Cloud Firestore serves as the NoSQL database to store hierarchical data, including User Profiles (containing fields for height, weight, and daily goals) and the FoodLogs collection.
+
+A key algorithmic component of the application is the TDEE Calculation Logic. Rather than using static values, the application implements the Mifflin-St Jeor Equation directly within the Dart code. Upon profile submission, the system calculates the Basal Metabolic Rate (BMR) multiplied by the user's activity level to derive a daily calorie target, which is then written to the user’s Firestore document.
+
+For the Camera Implementation, the application utilizes the camera plugin to manage the device's camera lifecycle and render the CameraPreview widget. While the image capture logic is fully scripted, the transmission of image bytes to the Gemini AI API is currently stubbed due to API key tier limitations. To compensate, the Manual Data Flow was optimized: when a user submits a manual log, a FoodLog object is instantiated, serialized into JSON, and pushed to Firestore. A stream listener on the Home Screen detects this database change and updates the UI in real-time without requiring a page refresh.
+
+### Limitations and future enhancements
+Despite the successful implementation of the core architecture, the project faces specific limitations. The primary constraint is that the AI Scanning feature is currently inactive; while the UI and capture logic function correctly, the connection to the food recognition API cannot process requests due to the lack of a production-tier API key. Consequently, the application relies on Manual Input, which places a burden on the user to know or look up the calorie content of their food. Additionally, the current logging system tracks only total calories, lacking a detailed breakdown of macronutrients such as proteins, fats, and carbohydrates.
+
+To address these issues in future iterations, the immediate priority is to activate the AI Recognition capability by securing a commercial API key, which would allow the camera to automatically identify food items and estimate portion sizes. Furthermore, the manual logging experience could be significantly improved by integrating a third-party nutrition database (such as FatSecret or Edamam). This would allow users to search for food items and retrieve accurate calorie data automatically, removing the need for estimation. Finally, future updates should include Data Visualization tools, such as weekly charts and graphs, to help users analyze their long-term dietary trends.
 
 ## References
 - Flutter Documentation: https://docs.flutter.dev
