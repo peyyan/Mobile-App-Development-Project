@@ -96,93 +96,20 @@ Relationship
   </tr>
 </table>
 
-## Summary of Achieved Features
-
-### User Authentication
-- Email and password sign-up and login using Firebase Authentication
-- Google Sign-In integration
-- Authentication gate routes users correctly based on login state
-
-### Onboarding & Calorie Intake Setup
-- Multi-step onboarding profile form collecting:
-  - Age
-  - Gender
-  - Height
-  - Weight
-  - Activity level
-  - Health goal
-- Daily calorie target (TDEE) is calculated automatically
-- User profile and calorie target saved to Firestore
-- Users are redirected to the main application after completing setup
-
-### Food Scanning & Analysis
-- Camera screen with live preview and flash control
-- Food image capture and analysis using the Gemini API
-- Result screen displays detected food name and estimated calories
-
-### Alternate Input Methods
-- Gallery image selection for food analysis
-- Manual text-based food entry for logging meals without image scanning
-
-### History & Results
-- Analysis results can be saved as food logs in Firestore
-- History screen displays logged meals per user
-- Consistent UI styling applied across all screens
-
----
-
-## Technical Explanation
-
-### Framework & UI
-- Developed using Flutter (Dart) with Material UI
-- Typography implemented using Google Fonts
-- Custom color extension `Color.o(...)` used to manage opacity without deprecated APIs
-
-### Authentication & Data
-- Firebase Authentication handles user registration and login
-- Cloud Firestore stores:
-  - User profiles (daily calorie target, activity level, goal, etc.)
-  - Food logs (food name, calories, timestamp, userId)
-
-### Camera & Media
-- `camera` plugin used for live camera preview and image capture
-- `image_picker` plugin used for selecting images from the gallery
-
-### AI Integration
-- Gemini API integrated using the `google_generative_ai` package
-- Image bytes and structured prompts sent to Gemini for food analysis
-- API responses parsed into a `FoodResult` model containing:
-  - Food name
-  - Estimated calories
-
-### Navigation & Application Flow
-- AuthGate controls routing based on authentication and onboarding completion
-- ScanScreen navigates to ResultScreen after analysis
-- Manual input and gallery selection reuse the same analysis pipeline
-
----
-
-## Limitations and Future Enhancements
-
-### Current Limitations
-- Gemini API responses can be inconsistent or fail in some cases
-- Food scanning requires a valid API key and active internet connection
-- Nutrient breakdown (protein, carbohydrates, fat) is currently placeholder data
-- History entries use placeholder images
-- Meal filtering is limited to "All" (meal type not stored in logs)
-- Error handling is basic and mainly uses SnackBar notifications
-
-### Future Enhancements
-- Improve AI prompt reliability and add retry and error recovery mechanisms
-- Save actual food images in meal history
-- Add meal type selection (Breakfast, Lunch, Dinner)
-- Store macronutrients and micronutrients in FoodLog
-- Implement offline caching and synchronization
-- Allow users to edit and delete food logs
-- Add analytics features such as daily and weekly summary charts
-- Add in-app settings for API key management and usage tracking
-
 ### Final UI
+
+<table style="width: 100%; border-collapse: collapse;">
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/48e7092c-9c17-4608-88f4-f393fbef5c82" width="250"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/ca3ab7ba-c95b-45e6-bf85-33084f361633" width="250"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/49ee5757-923e-4d25-a0fb-0199b59b149a" width="250"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/9cbcdd01-f540-44a6-ac8b-d6c01eb3b3d8" width="250"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/8c4b0b33-e8dc-4350-b149-349ba03489dc" width="250"></td>
+    <td></td> </tr>
+</table>
+
 ### Summary of achieved features 
 The development of NutriScan achieved several key functional milestones. First, User Authentication and Security were successfully implemented using Firebase Authentication, ensuring that user sessions are managed securely and unauthenticated users are restricted from accessing the app. To provide value beyond simple logging, the team implemented a Personalized Calorie Estimation feature. This creates a unique profile for each user by collecting their health data during onboarding and automatically calculating a Total Daily Energy Expenditure (TDEE). This ensures that every user has a specific, scientifically calculated calorie goal stored in the cloud.
 
